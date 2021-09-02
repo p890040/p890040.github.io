@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>K-means 分群演算法 簡單範例與opencv filter應用 | Lilin&#39;s Machine Learning 學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="這篇是對K-mean分群演算法的理解、概念程式碼範例、K-means影像filter應用程式碼 程式碼連結">
+<meta property="og:type" content="article">
+<meta property="og:title" content="K-means 分群演算法 簡單範例與opencv filter應用">
+<meta property="og:url" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/index.html">
+<meta property="og:site_name" content="Lilin&#39;s Machine Learning 學習筆記">
+<meta property="og:description" content="這篇是對K-mean分群演算法的理解、概念程式碼範例、K-means影像filter應用程式碼 程式碼連結">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/1.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/2.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/3.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/4.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/5.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/6.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/7.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/8.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/C1.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/C2.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/C3.png">
+<meta property="og:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/RGB.PNG">
+<meta property="article:published_time" content="2021-09-02T15:30:00.000Z">
+<meta property="article:modified_time" content="2021-09-02T16:42:20.015Z">
+<meta property="article:author" content="Chen Lilin(Pawn)">
+<meta property="article:tag" content="K-means">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Lilin's Machine Learning 學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Lilin&#39;s Machine Learning 學習筆記</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">紀錄我會的技術學習</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜尋"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜尋"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://p890040.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-K-means 分群演算法 簡單範例與opencv filter應用" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/" class="article-date">
+  <time class="dt-published" datetime="2021-09-02T15:30:00.000Z" itemprop="datePublished">2021-09-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Machine-Learning-algorithm/">Machine Learning algorithm</a>►<a class="article-category-link" href="/categories/Machine-Learning-algorithm/Programming/">Programming</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      K-means 分群演算法 簡單範例與opencv filter應用
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>這篇是對K-mean分群演算法的理解、概念程式碼範例、K-means影像filter應用程式碼</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/p890040/ML-Implement-Practice/tree/master/K-means">程式碼連結</a></p>
+ <span id="more"></span>
+
+<h2 id="K-means重點"><a href="#K-means重點" class="headerlink" title="K-means重點"></a>K-means重點</h2><ul>
+<li>Unsupervise Learning，演算法會將資料分為K個群</li>
+<li>隨機初始化K個中心點，依dataset中的data與這些中心點計算距離來比對</li>
+<li>距離中心點最近的data點就是屬於此中心點的群集</li>
+<li>被分為該群後的所有點，計算該中心點，並以此中心點為新的該群標準</li>
+</ul>
+<h2 id="K-means分群原理及如何運作"><a href="#K-means分群原理及如何運作" class="headerlink" title="K-means分群原理及如何運作"></a>K-means分群原理及如何運作</h2><p>假設我們現在想要在空間中(此以2D平面說明)，將所有的data分為我們指定要的K個群集，那就是先隨機初始化K個座標( x1 ,y1), (x2,y2)…(xk, yk)，距離第一個點(x1, y1)相較於其他點更近的data，就會被屬於這個群，依此類推。然後被分群好的點，再計算該群的中心點，然後用此中心取代上一個標準中心點。</p>
+<h2 id="Simple-Code-Example"><a href="#Simple-Code-Example" class="headerlink" title="Simple Code Example"></a>Simple Code Example</h2><p><em>#以下範例會省略部分繪圖code</em></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/p890040/ML-Implement-Practice/blob/master/K-means/K-means-simple.py">完整程式碼</a></p>
+<p>一開始先初始化Dataset與隨機K=3個中心點 (▲, X, ■)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">K = <span class="number">3</span></span><br><span class="line">x = np.linspace(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">y = x + np.random.normal(size=x.size)</span><br><span class="line">center_x = np.random.uniform(low=x.<span class="built_in">min</span>(), high=x.<span class="built_in">max</span>(), size=<span class="number">3</span>)</span><br><span class="line">center_y = np.random.uniform(low=y.<span class="built_in">min</span>(), high=y.<span class="built_in">max</span>(), size=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="1.png" alt="1" style="zoom:125%;"/>
+
+<p>定義我們的K-means function</p>
+<p><strong>points : 上圖所有data點(小黑點)</strong></p>
+<p><strong>center_points : 上圖的 (▲, X, ■)座標點</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">K_means</span>(<span class="params">points, center_points, K</span>):</span></span><br><span class="line">    x, y = points</span><br><span class="line">    center_x, center_y = center_points</span><br><span class="line">    K_distance = np.zeros((K, x.size))</span><br><span class="line">    <span class="keyword">for</span> idx_p <span class="keyword">in</span> <span class="built_in">range</span>(x.size):</span><br><span class="line">        <span class="keyword">for</span> idx_c <span class="keyword">in</span> <span class="built_in">range</span>(K):</span><br><span class="line">            dis = np.sqrt((center_x[idx_c] - x[idx_p])**<span class="number">2</span> + (center_y[idx_c] - y[idx_p])**<span class="number">2</span>)</span><br><span class="line">            K_distance[idx_c, idx_p]=dis</span><br><span class="line">    </span><br><span class="line">    _clusters = np.argmin(K_distance, axis=<span class="number">0</span>)</span><br><span class="line">    clusters = [np.where(_clusters==i)[<span class="number">0</span>] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(K)]    </span><br><span class="line">    new_center_x, new_center_y = np.zeros_like(center_x), np.zeros_like(center_y)</span><br><span class="line">    center_mv = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(K):</span><br><span class="line">        new_center_x[i] = np.mean(x[clusters[i]])</span><br><span class="line">        new_center_y[i] = np.mean(y[clusters[i]])</span><br><span class="line">        center_mv.append(np.sqrt((new_center_x[i] - center_x[i])**<span class="number">2</span> + (new_center_y[i] - center_y[i])**<span class="number">2</span>))</span><br><span class="line">    <span class="keyword">return</span> new_center_x, new_center_y, <span class="built_in">sum</span>(center_mv)</span><br><span class="line"></span><br><span class="line"><span class="comment">#%% Run the code</span></span><br><span class="line">step = <span class="number">10</span></span><br><span class="line">center_x_his, center_y_his = [], [] </span><br><span class="line">new_center_x, new_center_y = center_x, center_y</span><br><span class="line"><span class="keyword">for</span> s <span class="keyword">in</span> <span class="built_in">range</span>(step):</span><br><span class="line">    center_x_his.append(new_center_x)</span><br><span class="line">    center_y_his.append(new_center_y)</span><br><span class="line">    new_center_x, new_center_y, mv = K_means(points=[x, y], center_points=[new_center_x, new_center_y], K=K)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;Step <span class="subst">&#123;i&#125;</span> : moving distance <span class="subst">&#123;mv:<span class="number">.3</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span>(mv &lt; <span class="number">0.05</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&#x27;[Early stopped by moving distance : <span class="subst">&#123;mv:<span class="number">.3</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="2.png" alt="2" style="zoom:80%;"/><img src="3.png" alt="3" style="zoom:80%;"/> <img src="4.png" alt="4" style="zoom:80%;"/> <img src="5.png" alt="5" style="zoom:80%;"/> <img src="6.png" alt="6" style="zoom:80%;"/> <img src="7.png" alt="7" style="zoom:80%;"/> </p>
+<img src="8.png" alt="1" style="zoom:125%;" />
+
+<p>由上圖step1~step6，可以看到經過每個step，K-means將會找到新的群集，並將群集中心改變，就這樣慢慢接近最佳的分群解，直到中心點收斂為止。</p>
+<p>最終收斂軌跡圖如上圖</p>
+<h2 id="Opencv-K-means-filter範例與原理說明"><a href="#Opencv-K-means-filter範例與原理說明" class="headerlink" title="Opencv K-means filter範例與原理說明"></a>Opencv K-means filter範例與原理說明</h2><p><a target="_blank" rel="noopener" href="https://github.com/p890040/ML-Implement-Practice/blob/master/K-means/K-means-cv2.py">完整程式碼</a></p>
+<p>首先讀取原圖</p>
+<p><img src="C1.png" alt="C1"></p>
+<p>然後我們設K=2，終止條件為step10或者更新距離小於0.1可以得到如下圖結果，可以觀察到K=2時K-means很好的將籃子與背景分為咖啡色，中間的餅分為淡褐色</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#%% OpenCV K-means filter, K==2</span></span><br><span class="line">criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, <span class="number">10</span>, <span class="number">0.1</span>)</span><br><span class="line">K = <span class="number">2</span></span><br><span class="line">_, classes, centers = cv2.kmeans(img_vector, K, <span class="literal">None</span>, criteria, <span class="number">10</span>, cv2.KMEANS_RANDOM_CENTERS)</span><br><span class="line"></span><br><span class="line">centers = centers.astype(np.uint8)</span><br><span class="line">img_segment = centers[classes]</span><br><span class="line">img_segment = img_segment.reshape(img.shape)</span><br><span class="line"></span><br><span class="line">classes_segment = classes.reshape(img.shape[<span class="number">0</span>], img.shape[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+
+<p><img src="C2.png" alt="C2"></p>
+<p>然後再設K=3，可以看到多了一個群將原圖黑色邊緣及背景分了出來</p>
+<p><img src="C3.png" alt="C3"></p>
+<h4 id="K-means-image-filter原理"><a href="#K-means-image-filter原理" class="headerlink" title="K-means image filter原理"></a>K-means image filter原理</h4><p><img src="RGB.PNG" alt="RGB"></p>
+<p>可以看到上面這張圖，代表3D空間中的dataset，其實我們的RGB影像，三維色彩空間中就是這樣表示<br>因此，我們就能利用K-means算法，將影像上每個pixel的(R, G, B)值，視為空間中的一個點，然後一樣隨機初始K個點來做K-means分群<br>經過K-means update完成後，可以得到K個(R,G,B)點，所有屬於某個K群的pixel全部填上該中心點的RGB值<br>這就是Image filter with K-means的原理跟過程</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://p890040.github.io/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/" data-id="ckt35qvyi0001hovd8fsn98mp" data-title="K-means 分群演算法 簡單範例與opencv filter應用" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K-means/" rel="tag">K-means</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/08/22/Multilayer%20perceptron(MLP)%20Feed%20Forward%E8%A1%A8%E7%A4%BA%E5%8F%8A%E8%AA%AA%E6%98%8E/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Multilayer perceptron(MLP) Feed Forward表示及說明</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分類</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Machine-Learning-algorithm/">Machine Learning algorithm</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Machine-Learning-algorithm/Programming/">Programming</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">標籤</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/K-means/" rel="tag">K-means</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/KNN/" rel="tag">KNN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MLP/" rel="tag">MLP</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">標籤雲</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/K-means/" style="font-size: 10px;">K-means</a> <a href="/tags/KNN/" style="font-size: 10px;">KNN</a> <a href="/tags/MLP/" style="font-size: 10px;">MLP</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">彙整</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/09/02/K-means%20%E5%88%86%E7%BE%A4%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%B0%A1%E5%96%AE%E7%AF%84%E4%BE%8B%E8%88%87opencv%20filter%E6%87%89%E7%94%A8/">K-means 分群演算法 簡單範例與opencv filter應用</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/22/Multilayer%20perceptron(MLP)%20Feed%20Forward%E8%A1%A8%E7%A4%BA%E5%8F%8A%E8%AA%AA%E6%98%8E/">Multilayer perceptron(MLP) Feed Forward表示及說明</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/15/KNN(K%20Nearest%20Neighbors)%20%E5%88%86%E9%A1%9E%E6%BC%94%E7%AE%97%E6%B3%95/">KNN(K Nearest Neighbors) 分類演算法</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 Chen Lilin(Pawn)<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
